@@ -426,9 +426,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 3. For production deployments, consider setting up a custom backend proxy
 
 #### Gemini API Errors
-**Problem**: `Error 404: models/gemini-1.5-flash is not found for API version v1`
+**Problem**: `Error 404: models/gemini-2.5-flash is not found for API version v1`
 
-**Solution**: This has been fixed by using the `gemini-pro` model compatible with @google/generative-ai v0.1.3. To enable AI features:
+**Solution**: This has been fixed by updating to @google/generative-ai v0.24.1+ and using the `gemini-2.5-flash` model. To enable AI features:
 1. Get an API key from [Google Gemini](https://makersuite.google.com/app/apikey)
 2. Add it to your `.env` file: `VITE_GEMINI_API_KEY=your_key_here`
 3. Restart the development server
