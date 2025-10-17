@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { AlertTriangle, TrendingDown, Shield, DollarSign, Search, X, AlertCircle, FileText, Scale, Eye } from 'lucide-react';
+import { AlertTriangle, TrendingDown, Shield, DollarSign, Search, X, AlertCircle, FileText, Scale, Eye, Sparkles, Filter, SortAsc } from 'lucide-react';
+import { geminiService } from './services/geminiAI';
+import { cfpbAPI } from './services/cfpbAPI';
+import { nhtsaAPI } from './services/nhtsaAPI';
+import { ftcAPI } from './services/ftcAPI';
 
 const EnshitificationPortal = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAISearch, setIsAISearch] = useState(false);
+  const [aiSearchResult, setAISearchResult] = useState<any>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [sortBy, setSortBy] = useState<'complaints' | 'recalls' | 'name'>('complaints');
+  const [filterSector, setFilterSector] = useState<string>('all');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [liveApiData, setLiveApiData] = useState<any>(null);
   
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -150,10 +161,18 @@ const EnshitificationPortal = () => {
     return sourceColors[source] || colors.gray700;
   };
 
-  const filteredCompanies = companyRankings.filter(company =>
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.sector.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCompanies = companyRankings
+    .filter(company => {
+      const matchesSearch = company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        company.sector.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSector = filterSector === 'all' || company.sector.toLowerCase().includes(filterSector.toLowerCase());
+      return matchesSearch && matchesSector;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'complaints') return b.complaints - a.complaints;
+      if (sortBy === 'recalls') return b.recalls - a.recalls;
+      return a.name.localeCompare(b.name);
+    });
 
   const filteredTimeline = timelineEvents.filter(event =>
     event.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -166,6 +185,110 @@ const EnshitificationPortal = () => {
   );
 
   const hasNoResults = searchQuery && filteredCompanies.length === 0 && filteredTimeline.length === 0 && filteredSectors.length === 0;
+
+  // Handle AI-powered search
+  const handleAISearch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    setIsAISearch(true);
+    
+    try {
+      if (geminiService.isAvailable()) {
+        const result = await geminiService.naturalLanguageSearch(searchQuery, {
+          companies: companyRankings,
+          sectors: sectorData,
+          timeline: timelineEvents
+        });
+        setAISearchResult(result);
+        
+        // Apply AI filters if available
+        if (result.filters?.sector) {
+          setFilterSector(result.filters.sector);
+        }
+      } else {
+        // Fallback if Gemini not available
+        setAISearchResult({
+          intent: 'general_query',
+          searchTerm: searchQuery,
+          answer: 'AI search requires Gemini API key. Using standard search.'
+        });
+      }
+    } catch (error) {
+      console.error('AI search error:', error);
+      setAISearchResult({
+        intent: 'error',
+        answer: 'AI search unavailable. Using standard search.'
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle live API data fetch
+  const handleLiveDataFetch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsSearching(true);
+    
+    try {
+      // Fetch data from multiple sources in parallel
+      const [cfpbData, ftcData] = await Promise.all([
+        cfpbAPI.searchComplaints(searchQuery, 10).catch(err => {
+          console.error('CFPB API error:', err);
+          return null;
+        }),
+        ftcAPI.searchFraudReports(searchQuery, 10).catch(err => {
+          console.error('FTC API error:', err);
+          return null;
+        })
+      ]);
+      
+      // Combine the data
+      const combinedData = {
+        cfpb: cfpbData,
+        ftc: ftcData,
+        timestamp: new Date().toISOString()
+      };
+      
+      setLiveApiData(combinedData);
+      
+      // If both APIs fail and Gemini is available, use AI to provide insights
+      if (!cfpbData && !ftcData && geminiService.isAvailable()) {
+        try {
+          const aiInsight = await geminiService.consumerAdviceBot(
+            `I'm searching for information about ${searchQuery}. Can you provide general consumer protection guidance?`,
+            { searchQuery }
+          );
+          setAISearchResult({
+            intent: 'fallback',
+            answer: aiInsight
+          });
+        } catch (aiError) {
+          console.error('Gemini fallback error:', aiError);
+        }
+      }
+    } catch (error) {
+      console.error('Live data fetch error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search (supports both regular and AI search)
+  const handleSearch = () => {
+    if (isAISearch || geminiService.isAvailable()) {
+      handleAISearch();
+    }
+    handleLiveDataFetch();
+  };
+
+  // Handle Enter key in search input
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.gray50, fontFamily: 'Public Sans, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
@@ -180,7 +303,7 @@ const EnshitificationPortal = () => {
               Beta
             </span>
             <span className="text-sm" style={{ color: colors.white }}>
-              This is a new service – your <a href="#" style={{ color: colors.white, textDecoration: 'underline', fontWeight: 'bold' }}>feedback</a> will help us to improve it.
+              This is a new service – your <a href="https://devpost.com/bruhdev1290?ref_content=user-portfolio&ref_feature=portfolio&ref_medium=global-nav" target="_blank" rel="noopener noreferrer" style={{ color: colors.white, textDecoration: 'underline', fontWeight: 'bold' }}>feedback</a> will help us to improve it.
             </span>
           </div>
         </div>
@@ -193,23 +316,133 @@ const EnshitificationPortal = () => {
           
           <div className="max-w-3xl">
             <div className="p-6 rounded-lg" style={{ backgroundColor: colors.white }}>
-              <h3 className="text-lg font-semibold mb-4" style={{ color: colors.gray900 }}>Find companies and sectors</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold" style={{ color: colors.gray900 }}>Find companies and sectors</h3>
+                <button 
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className="flex items-center gap-2 px-3 py-1 text-sm rounded"
+                  style={{ 
+                    backgroundColor: showAdvancedFilters ? colors.primary : colors.gray100, 
+                    color: showAdvancedFilters ? colors.white : colors.gray700,
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Filter size={16} />
+                  Filters
+                </button>
+              </div>
+
+              {showAdvancedFilters && (
+                <div className="mb-4 p-4 rounded" style={{ backgroundColor: colors.gray50 }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: colors.gray700 }}>
+                        Filter by Sector
+                      </label>
+                      <select
+                        value={filterSector}
+                        onChange={(e) => setFilterSector(e.target.value)}
+                        className="w-full px-3 py-2 border rounded"
+                        style={{ borderColor: colors.gray300, color: colors.gray900 }}
+                      >
+                        <option value="all">All Sectors</option>
+                        <option value="financial">Financial</option>
+                        <option value="automotive">Automotive</option>
+                        <option value="consumer">Consumer Products</option>
+                        <option value="technology">Technology</option>
+                        <option value="healthcare">Healthcare</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: colors.gray700 }}>
+                        Sort Results By
+                      </label>
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as any)}
+                        className="w-full px-3 py-2 border rounded"
+                        style={{ borderColor: colors.gray300, color: colors.gray900 }}
+                      >
+                        <option value="complaints">Most Complaints</option>
+                        <option value="recalls">Most Recalls</option>
+                        <option value="name">Company Name</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-3">
                 <input
                   type="text"
-                  placeholder="Search by company name, sector, or issue type"
+                  placeholder="Search by company name, sector, or ask a question..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   className="flex-1 px-4 py-3 text-base border-2 rounded"
                   style={{ borderColor: colors.gray300, color: colors.gray900, outline: 'none' }}
                   onFocus={(e) => e.target.style.borderColor = colors.primary}
                   onBlur={(e) => e.target.style.borderColor = colors.gray300}
                 />
-                <button className="px-8 py-3 font-semibold rounded flex items-center gap-2" style={{ backgroundColor: colors.primary, color: colors.white, border: 'none', cursor: 'pointer' }}>
-                  <Search size={20} />
-                  Search
+                <button 
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                  className="px-8 py-3 font-semibold rounded flex items-center gap-2" 
+                  style={{ 
+                    backgroundColor: isSearching ? colors.gray300 : colors.primary, 
+                    color: colors.white, 
+                    border: 'none', 
+                    cursor: isSearching ? 'not-allowed' : 'pointer' 
+                  }}
+                >
+                  {isSearching ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Searching
+                    </>
+                  ) : (
+                    <>
+                      <Search size={20} />
+                      Search
+                    </>
+                  )}
                 </button>
               </div>
+
+              {geminiService.isAvailable() && (
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    onClick={() => setIsAISearch(!isAISearch)}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded"
+                    style={{
+                      backgroundColor: isAISearch ? colors.info : 'transparent',
+                      color: isAISearch ? colors.white : colors.info,
+                      border: `1px solid ${colors.info}`,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Sparkles size={14} />
+                    AI-Powered Search {isAISearch && '✓'}
+                  </button>
+                  <span className="text-xs" style={{ color: colors.gray500 }}>
+                    Try: "Which financial companies have the most complaints?"
+                  </span>
+                </div>
+              )}
+
+              {aiSearchResult && (
+                <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: colors.info + '10', border: `1px solid ${colors.info}` }}>
+                  <div className="flex items-start gap-3">
+                    <Sparkles size={20} style={{ color: colors.info, flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <p className="font-medium mb-1" style={{ color: colors.gray900 }}>AI Analysis:</p>
+                      <p className="text-sm" style={{ color: colors.gray700 }}>{aiSearchResult.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {searchQuery && (
                 <div className="mt-3 text-sm" style={{ color: colors.gray700 }}>
                   {hasNoResults ? (
@@ -219,7 +452,10 @@ const EnshitificationPortal = () => {
                   )}
                 </div>
               )}
-              <div className="text-xs mt-3" style={{ color: colors.gray500 }}>Example: Wells Fargo, Financial Services, NHTSA recalls</div>
+
+              <div className="text-xs mt-3" style={{ color: colors.gray500 }}>
+                Example: Wells Fargo, Financial Services, "show me automotive recalls"
+              </div>
             </div>
           </div>
         </div>
