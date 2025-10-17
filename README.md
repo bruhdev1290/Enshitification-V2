@@ -10,7 +10,7 @@
 
 ![Enshitification Portal Screenshot](https://github.com/user-attachments/assets/a662a37d-3620-4e4a-ab77-824be228c162)
 
-## 🎯 Open Source Hackfest 2024
+## 🎯 Open Source Hackfest 2025
 
 This project is built for **Open Source Hackfest**, competing in:
 - 🏆 **Code for Good** - Using open source tools for consumer protection and social impact
