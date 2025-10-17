@@ -54,7 +54,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ colors }) => {
 
       // Use the consumer advice bot for chatbot interactions
       const response = await geminiService.consumerAdviceBot(inputValue, {
-        context: 'general consumer protection inquiry'
+        portalContext: 'The Enshitification Portal - tracking quality decline and consumer protection',
+        dataSources: ['CFPB (1.8M+ financial complaints)', 'NHTSA (14K+ automotive recalls)', 'CPSC (8K+ product recalls)', 'FTC (5.8M+ fraud complaints)'],
+        purpose: 'Identify companies with declining quality, track recalls, analyze complaint trends, and provide data-driven consumer protection insights'
       });
 
       const assistantMessage: Message = {
@@ -142,14 +144,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ colors }) => {
           <div className="text-center py-8">
             <Sparkles size={48} style={{ color: colors.gray300, margin: '0 auto' }} />
             <p className="mt-4 text-sm" style={{ color: colors.gray500 }}>
-              Ask me about consumer protection, complaints, recalls, or fraud prevention!
+              Ask me about recalls, quality decline, complaints, or the portal's federal data sources!
             </p>
             <div className="mt-4 space-y-2">
               <p className="text-xs font-semibold" style={{ color: colors.gray700 }}>Example questions:</p>
               <div className="text-xs space-y-1" style={{ color: colors.gray600 }}>
-                <p>"What should I know about Wells Fargo?"</p>
-                <p>"How can I protect myself from fraud?"</p>
                 <p>"What are common automotive recalls?"</p>
+                <p>"Which company has the most decline in quality?"</p>
+                <p>"Has Amazon Basics had a recall?"</p>
+                <p>"What motor vehicle company has the most recalls?"</p>
               </div>
             </div>
           </div>
