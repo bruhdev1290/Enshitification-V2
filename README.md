@@ -38,7 +38,7 @@ This project is built for **Open Source Hackfest**, competing in:
 - 📊 **Dynamic Sorting** - Sort results by Most Complaints, Most Recalls, or Company Name
 - 🔄 **Real-Time Search** - Instant results as you type with result counters
 - ⌨️ **Keyboard Navigation** - Press Enter to search quickly
-- 📡 **Live API Integration** - Fetches real-time data from CFPB and NHTSA federal databases
+- 📡 **Live API Integration** - Fetches real-time data from CFPB, NHTSA, FTC, and CPSC federal databases
 - 🎨 **Collapsible Filters** - Toggle advanced filters panel for cleaner interface
 - ⚡ **Loading States** - Visual feedback during API calls and processing
 
@@ -219,11 +219,16 @@ Enshitification-V2/
 │   ├── services/
 │   │   ├── geminiAI.ts            # Google Gemini AI integration
 │   │   ├── cfpbAPI.ts             # CFPB API service (live data)
-│   │   └── nhtsaAPI.ts            # NHTSA API service (live data)
+│   │   ├── nhtsaAPI.ts            # NHTSA API service (live data)
+│   │   ├── ftcAPI.ts              # FTC API service (live data)
+│   │   ├── cpscAPI.ts             # CPSC Recall Retrieval API service (NEW!)
+│   │   └── cpscAPI.demo.ts        # CPSC API usage examples
 │   ├── main.tsx                    # Application entry point
 │   └── index.css                   # Global styles
 ├── docs/
-│   └── API_INTEGRATION.md          # Complete API integration guide
+│   ├── API_INTEGRATION.md          # Complete API integration guide
+│   ├── CPSC_API_INTEGRATION.md     # CPSC API documentation (NEW!)
+│   └── CPSC_INTEGRATION_EXAMPLE.md # CPSC integration examples (NEW!)
 ├── dist/                           # Production build (generated)
 ├── index.html                      # HTML template
 ├── netlify.toml                    # Netlify configuration
@@ -267,10 +272,12 @@ This platform aggregates data from four major U.S. federal agencies:
 - **No API key required**
 
 ### 3. CPSC - Consumer Product Safety Commission
-- **API**: [CPSC Recalls API](https://www.cpsc.gov/Recalls)
-- **Data**: Product recalls, violations, penalties
+- **API**: [CPSC Recall Retrieval API](https://www.saferproducts.gov/RestWebServices/)
+- **Data**: Product recalls, hazards, injuries, manufacturer information
+- **Implementation**: Full TypeScript support with XML/JSON formats in `src/services/cpscAPI.ts`
 - **Stats**: 8K+ violations tracked
 - **No API key required**
+- **Documentation**: See [CPSC API Integration Guide](docs/CPSC_API_INTEGRATION.md)
 
 ### 4. FTC - Federal Trade Commission
 - **API**: [FTC Consumer Sentinel API](https://api.ftc.gov/)
