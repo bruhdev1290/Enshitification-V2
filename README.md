@@ -28,16 +28,27 @@ This project is built for **Open Source Hackfest**, competing in:
 
 ### Core Platform
 - 📊 **Live Data Dashboard** - Real-time statistics from 4 major federal agencies (CFPB, NHTSA, CPSC, FTC)
-- 🔍 **Smart Search** - Find companies, sectors, and issues instantly across all databases
+- 🔍 **Enhanced Smart Search** - Advanced search with filtering, sorting, and live API integration
 - 📈 **Sector Analysis** - Visual charts showing complaint trends by industry
 - 🏢 **Company Rankings** - Grade-based rankings with detailed metrics
 - ⚠️ **Recent Alerts** - Latest complaints and recalls with severity indicators
 
+### Enhanced Search Capabilities
+- 🎯 **Advanced Filters** - Filter by sector (Financial, Automotive, Consumer Products, Technology, Healthcare)
+- 📊 **Dynamic Sorting** - Sort results by Most Complaints, Most Recalls, or Company Name
+- 🔄 **Real-Time Search** - Instant results as you type with result counters
+- ⌨️ **Keyboard Navigation** - Press Enter to search quickly
+- 📡 **Live API Integration** - Fetches real-time data from CFPB and NHTSA federal databases
+- 🎨 **Collapsible Filters** - Toggle advanced filters panel for cleaner interface
+- ⚡ **Loading States** - Visual feedback during API calls and processing
+
 ### AI-Powered Features (Google Gemini API)
 - 🤖 **AI Complaint Analyzer** - Analyzes trends and identifies recurring issues
-- 💬 **Natural Language Search** - Ask questions in plain English about consumer data
+- 💬 **Natural Language Search** - Ask questions in plain English like "Which financial companies have the most complaints?"
 - 🚨 **Fraud Pattern Detection** - Identifies emerging scam types and vulnerable demographics
 - 🤝 **Consumer Protection Chatbot** - Personalized advice based on complaint data
+- ✨ **AI Search Toggle** - Enable/disable AI-powered search with visual indicator
+- 🧠 **Smart Intent Detection** - AI understands search context and provides relevant results
 
 ### Design & Accessibility
 - 🎨 **Government Design Systems** - Follows USWDS, GOV.UK, and California DS standards
@@ -131,14 +142,88 @@ Click the button below to deploy this project to Netlify instantly:
 
 Once connected to Netlify, every push to the main branch automatically triggers a new deployment. No manual intervention needed!
 
+## 🔍 Enhanced Search Features
+
+### Overview
+The search functionality has been completely overhauled with advanced features, live API integration, and AI-powered natural language processing.
+
+### Key Features
+
+#### 1. Advanced Filtering & Sorting
+- **Sector Filter**: Filter results by Financial, Automotive, Consumer Products, Technology, or Healthcare sectors
+- **Dynamic Sorting**: Sort by Most Complaints, Most Recalls, or Company Name (A-Z)
+- **Collapsible Panel**: Toggle advanced filters to keep the interface clean
+- **Real-time Updates**: Filters apply instantly as you change selections
+
+#### 2. Live API Integration
+The search now queries real federal databases:
+- **CFPB API** (`src/services/cfpbAPI.ts`): Fetches live consumer complaint data
+- **NHTSA API** (`src/services/nhtsaAPI.ts`): Retrieves current vehicle recall information
+- **Automatic Fetching**: APIs are called automatically when you search
+- **Error Handling**: Graceful fallbacks if APIs are unavailable
+
+#### 3. AI-Powered Natural Language Search
+When enabled (requires Gemini API key):
+- **Conversational Queries**: Ask questions like "show me automotive recalls"
+- **Intent Detection**: AI understands what you're looking for
+- **Smart Results**: Get contextually relevant data
+- **Visual Feedback**: See AI's interpretation of your search
+
+#### 4. User Experience Enhancements
+- **Keyboard Support**: Press Enter to trigger search
+- **Loading States**: Visual spinner during API calls
+- **Result Counters**: See how many companies, events, and sectors match
+- **Empty States**: Clear messaging when no results found
+- **Responsive Design**: Works perfectly on mobile devices
+
+### Search Interface Screenshots
+
+**Enhanced Search with Advanced Filters**
+
+![Enhanced Search Interface](https://github.com/user-attachments/assets/bd9866f5-0732-4b79-a893-7e3ce5ac11a5)
+
+*Toggle filters to refine your search by sector and sort results dynamically*
+
+**Live Search Results**
+
+![Search Results for Wells Fargo](https://github.com/user-attachments/assets/62b124af-fc1b-41e8-bdbc-d45ddbe8b198)
+
+*Real-time filtering showing companies, events, and sectors matching your query*
+
+### How to Use the Search
+
+1. **Basic Search**: Type a company name or sector in the search box
+2. **Advanced Filters**: Click the "Filters" button to show filtering options
+3. **AI Search**: Click the sparkles ✨ button to enable natural language queries
+4. **Sort Results**: Use the "Sort Results By" dropdown to organize data
+5. **View Results**: See filtered companies, events, and sectors below
+
+### Example Queries
+
+**Standard Search:**
+- `Wells Fargo` - Find all data related to Wells Fargo
+- `Financial` - Show all financial sector companies
+- `NHTSA recalls` - Filter by NHTSA recall events
+
+**AI-Powered Search** (requires Gemini API key):
+- `Which financial companies have the most complaints?`
+- `Show me automotive recalls`
+- `What are recent fraud reports?`
+
 ## 📁 Project Structure
 
 ```
 Enshitification-V2/
 ├── src/
-│   ├── enshitification-portal.tsx  # Main application component
+│   ├── enshitification-portal.tsx  # Main application component with enhanced search
+│   ├── services/
+│   │   ├── geminiAI.ts            # Google Gemini AI integration
+│   │   ├── cfpbAPI.ts             # CFPB API service (live data)
+│   │   └── nhtsaAPI.ts            # NHTSA API service (live data)
 │   ├── main.tsx                    # Application entry point
 │   └── index.css                   # Global styles
+├── docs/
+│   └── API_INTEGRATION.md          # Complete API integration guide
 ├── dist/                           # Production build (generated)
 ├── index.html                      # HTML template
 ├── netlify.toml                    # Netlify configuration
@@ -146,6 +231,10 @@ Enshitification-V2/
 ├── vite.config.ts                  # Vite bundler configuration
 ├── tailwind.config.js              # Tailwind CSS configuration
 ├── tsconfig.json                   # TypeScript configuration
+├── .env.example                    # Environment variables template
+├── CODE_OF_CONDUCT.md              # Community standards
+├── CONTRIBUTING.md                 # Contribution guidelines
+├── DEPLOYMENT.md                   # Deployment guide
 └── README.md                       # You are here!
 ```
 
@@ -191,6 +280,9 @@ This platform aggregates data from four major U.S. federal agencies:
 
 ## 🤖 AI Features Powered by Google Gemini
 
+### Implementation Status
+All AI features are fully implemented in `src/services/geminiAI.ts` with complete error handling and graceful fallbacks.
+
 ### 1. AI Complaint Analyzer
 Analyzes consumer complaints to identify:
 - Top 3 recurring issues for any company
@@ -198,11 +290,16 @@ Analyzes consumer complaints to identify:
 - Trend analysis (Improving/Stable/Worsening)
 - Personalized consumer recommendations
 
-### 2. Natural Language Query
-Ask questions like:
+**Usage**: Enable AI search toggle and query company complaint data
+
+### 2. Natural Language Search (Implemented)
+Ask questions in plain English and get intelligent results:
 - "What are the most common complaints about Wells Fargo?"
 - "Show me recent recalls in the automotive sector"
 - "Which companies have the worst fraud records?"
+- "Which financial companies have the most complaints?"
+
+**How it works**: AI parses your natural language query, detects intent, and filters results accordingly
 
 ### 3. Fraud Pattern Detection
 AI-powered analysis of FTC data to identify:
@@ -211,11 +308,26 @@ AI-powered analysis of FTC data to identify:
 - Most vulnerable demographics
 - Preventive recommendations
 
+**Usage**: Query fraud-related data from FTC database
+
 ### 4. Consumer Protection Chatbot
 Get personalized advice based on real complaint data:
 - Risk assessments for specific companies
 - Guidance on filing complaints
 - Understanding your consumer rights
+
+**Usage**: Ask questions about specific companies or consumer protection topics
+
+### Using AI Features
+
+To enable AI-powered features:
+
+1. **Get API Key**: Sign up for [Google Gemini API](https://makersuite.google.com/app/apikey)
+2. **Add to .env**: Set `VITE_GEMINI_API_KEY=your_key_here`
+3. **Toggle AI Search**: Click the sparkles ✨ icon in the search interface
+4. **Ask Questions**: Use natural language queries
+
+**Note**: The app works without AI features but provides enhanced intelligence when configured.
 
 ## 🎨 Design Philosophy
 
