@@ -285,6 +285,20 @@ This platform aggregates data from four major U.S. federal agencies:
 - **Stats**: 5.8M+ fraud/scam complaints
 - **DEMO_KEY available for testing**
 
+### 🔧 CORS Proxy Configuration
+
+To enable browser-based access to federal APIs, we use a CORS proxy service:
+
+- **Proxy Service**: [corsproxy.io](https://corsproxy.io)
+- **Affected APIs**: CFPB, FTC (and potentially CPSC for some endpoints)
+- **Why Needed**: Federal government APIs don't include CORS headers, preventing direct browser access
+- **Implementation**: See `src/services/cfpbAPI.ts` and `src/services/ftcAPI.ts`
+
+**For Production Deployment**: Consider setting up your own CORS proxy or backend service for better reliability and performance. Alternative proxy services include:
+- [CORS Anywhere](https://github.com/Rob--W/cors-anywhere) (self-hosted)
+- [AllOrigins](https://allorigins.win/)
+- Custom backend proxy (recommended for production)
+
 ## 🤖 AI Features Powered by Google Gemini
 
 ### Implementation Status
@@ -398,6 +412,50 @@ Contributions are welcome! We're building a platform to empower consumers throug
 - 🧪 Test coverage expansion
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## 🐛 Troubleshooting
+
+### Common Issues and Solutions
+
+#### CORS Policy Errors
+**Problem**: `Access to fetch has been blocked by CORS policy`
+
+**Solution**: The application now uses a CORS proxy (corsproxy.io) to handle this automatically. If you still see CORS errors:
+1. Check your browser's network tab to ensure the proxy is being used
+2. Try clearing browser cache and reloading
+3. For production deployments, consider setting up a custom backend proxy
+
+#### Gemini API Errors
+**Problem**: `Error 404: models/gemini-pro is not found`
+
+**Solution**: This has been fixed by updating to the `gemini-1.5-flash` model. To enable AI features:
+1. Get an API key from [Google Gemini](https://makersuite.google.com/app/apikey)
+2. Add it to your `.env` file: `VITE_GEMINI_API_KEY=your_key_here`
+3. Restart the development server
+
+**Problem**: `Gemini API not configured`
+
+**Solution**: This is expected behavior when no API key is provided. The app will work without AI features using standard search.
+
+#### FTC API Certificate Errors
+**Problem**: `ERR_CERT_AUTHORITY_INVALID` when accessing FTC API
+
+**Solution**: This has been fixed by routing FTC API calls through the CORS proxy, which also handles SSL certificate issues.
+
+#### API Rate Limits
+**Problem**: Too many requests to federal APIs
+
+**Solution**: 
+- CFPB, NHTSA: No rate limits on public APIs
+- FTC: Use DEMO_KEY for testing, get a real API key for production
+- Gemini: Free tier has usage limits, upgrade for production use
+
+#### Build Warnings
+**Problem**: "Some chunks are larger than 500 kB after minification"
+
+**Solution**: This is a warning, not an error. The app builds successfully. To optimize:
+- Consider code splitting with dynamic imports (future enhancement)
+- Use `build.rollupOptions.output.manualChunks` in vite.config.ts
 
 ## 📋 Code of Conduct
 

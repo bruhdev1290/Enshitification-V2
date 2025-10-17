@@ -104,11 +104,20 @@ Your site will be built and deployed automatically!
 3. Enter your domain name
 4. Follow DNS configuration instructions
 
-### Environment Variables (if needed in future)
+### Environment Variables (Optional - for AI features)
+
+To enable AI-powered features in production:
 
 1. Go to **Site settings** → **Environment variables**
 2. Click **"Add a variable"**
-3. Set your key-value pairs
+3. Add the following variables:
+   - **Key**: `VITE_GEMINI_API_KEY`
+   - **Value**: Your Google Gemini API key from [makersuite.google.com](https://makersuite.google.com/app/apikey)
+   - **Scopes**: Select all scopes or "All"
+4. Click **"Save"**
+5. Trigger a new deployment to apply changes
+
+**Note**: The app works without AI features enabled. CFPB, NHTSA, CPSC, and FTC APIs don't require keys.
 
 ### Enable HTTPS
 
