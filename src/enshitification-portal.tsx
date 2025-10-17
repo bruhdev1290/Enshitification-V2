@@ -5,6 +5,7 @@ import { geminiService } from './services/geminiAI';
 import { cfpbAPI } from './services/cfpbAPI';
 import { nhtsaAPI } from './services/nhtsaAPI';
 import { ftcAPI } from './services/ftcAPI';
+import { ChatBox } from './components/ChatBox';
 
 const EnshitificationPortal = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -240,62 +241,13 @@ const EnshitificationPortal = () => {
     }
   };
 
-  // Handle live API data fetch
-  const handleLiveDataFetch = async () => {
-    if (!searchQuery.trim()) return;
-    
-    setIsSearching(true);
-    
-    try {
-      // Fetch data from multiple sources in parallel
-      const [cfpbData, ftcData] = await Promise.all([
-        cfpbAPI.searchComplaints(searchQuery, 10).catch(err => {
-          console.error('CFPB API error:', err);
-          return null;
-        }),
-        ftcAPI.searchFraudReports(searchQuery, 10).catch(err => {
-          console.error('FTC API error:', err);
-          return null;
-        })
-      ]);
-      
-      // Combine the data
-      const combinedData = {
-        cfpb: cfpbData,
-        ftc: ftcData,
-        timestamp: new Date().toISOString()
-      };
-      
-      setLiveApiData(combinedData);
-      
-      // If both APIs fail and Gemini is available, use AI to provide insights
-      if (!cfpbData && !ftcData && geminiService.isAvailable()) {
-        try {
-          const aiInsight = await geminiService.consumerAdviceBot(
-            `I'm searching for information about ${searchQuery}. Can you provide general consumer protection guidance?`,
-            { searchQuery }
-          );
-          setAISearchResult({
-            intent: 'fallback',
-            answer: aiInsight
-          });
-        } catch (aiError) {
-          console.error('Gemini fallback error:', aiError);
-        }
-      }
-    } catch (error) {
-      console.error('Live data fetch error:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  // Handle search (supports both regular and AI search)
+  // Handle search (only AI-powered search, no API fetches)
   const handleSearch = () => {
-    if (isAISearch || geminiService.isAvailable()) {
+    if (isAISearch && geminiService.isAvailable()) {
       handleAISearch();
     }
-    handleLiveDataFetch();
+    // Removed handleLiveDataFetch() to prevent multiple API calls causing CORS errors
+    // Use the separate ChatBox component for conversational queries instead
   };
 
   // Handle Enter key in search input
@@ -391,7 +343,7 @@ const EnshitificationPortal = () => {
               <div className="flex gap-3">
                 <input
                   type="text"
-                  placeholder="Search by company name, sector, or ask a question..."
+                  placeholder="Search by company name or sector..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -469,7 +421,11 @@ const EnshitificationPortal = () => {
               )}
 
               <div className="text-xs mt-3" style={{ color: colors.gray500 }}>
-                Example: Wells Fargo, Financial Services, "show me automotive recalls"
+                Example: Wells Fargo, Financial Services, NHTSA
+              </div>
+              <div className="text-xs mt-1 flex items-center gap-1" style={{ color: colors.info }}>
+                <Sparkles size={14} />
+                <span>For questions and AI assistance, use the chatbox in the bottom-right corner</span>
               </div>
             </div>
           </div>
@@ -658,6 +614,9 @@ const EnshitificationPortal = () => {
           <p className="text-sm" style={{ color: colors.gray500 }}>Version 2.0.0 - October 2025 | Data from CFPB, NHTSA, CPSC, FTC</p>
         </div>
       </footer>
+
+      {/* Separate ChatBox component for AI conversations without triggering API fetches */}
+      <ChatBox colors={colors} />
     </div>
   );
 };
