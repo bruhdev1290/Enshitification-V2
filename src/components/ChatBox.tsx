@@ -150,9 +150,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ colors }) => {
               <p className="text-xs font-semibold" style={{ color: colors.gray700 }}>Example questions:</p>
               <div className="text-xs space-y-1" style={{ color: colors.gray600 }}>
                 <p>"What are common automotive recalls?"</p>
-                <p>"Which company has the most decline in quality?"</p>
+                <p>"Which financial company has the most CFPB complaints?"</p>
+                <p>"Which sector experienced the most quality decline?"</p>
                 <p>"Has Amazon Basics had a recall?"</p>
-                <p>"What motor vehicle company has the most recalls?"</p>
               </div>
             </div>
           </div>
