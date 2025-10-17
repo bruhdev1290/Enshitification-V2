@@ -1,6 +1,10 @@
-# 🤝 Contributing to Enshitification Portal
+# 🤝 Contributing to The Enshitification Portal
 
 Thank you for your interest in contributing! This guide will help you get started.
+
+## 🎯 Welcome Contributors!
+
+We're building a platform to empower consumers through transparency and government data. Whether you're here for Open Source Hackfest or just want to help, we appreciate your contributions!
 
 ## Quick Start for Contributors
 
@@ -10,6 +14,7 @@ Thank you for your interest in contributing! This guide will help you get starte
 - npm (comes with Node.js)
 - Git
 - A code editor (VS Code recommended)
+- Google Gemini API key ([get one here](https://makersuite.google.com/app/apikey))
 
 ### Setup Development Environment
 
@@ -26,7 +31,13 @@ Thank you for your interest in contributing! This guide will help you get starte
    npm install
    ```
 
-3. **Start development server**
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and add your Gemini API key
+
+4. **Start development server**
    ```bash
    npm run dev
    ```
