@@ -186,6 +186,21 @@ const EnshitificationPortal = () => {
 
   const hasNoResults = searchQuery && filteredCompanies.length === 0 && filteredTimeline.length === 0 && filteredSectors.length === 0;
 
+  // Handle service card clicks to filter by source
+  const handleServiceClick = (source: string) => {
+    setSearchQuery(source);
+    // Scroll to the Recent Complaints & Recalls section
+    setTimeout(() => {
+      const headings = document.querySelectorAll('h2');
+      const targetHeading = Array.from(headings).find(h => 
+        h.textContent?.includes('Recent Complaints')
+      );
+      if (targetHeading) {
+        targetHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   // Handle AI-powered search
   const handleAISearch = async () => {
     if (!searchQuery.trim()) return;
@@ -472,7 +487,7 @@ const EnshitificationPortal = () => {
                 <h3 className="text-xl font-bold mb-2" style={{ color: colors.gray900 }}>CFPB Complaints</h3>
                 <p className="mb-4" style={{ color: colors.gray700, fontSize: '0.95rem' }}>Access consumer financial complaints and track resolution rates</p>
                 <div className="text-3xl font-bold mb-4" style={{ color: colors.primary }}>{liveStats.cfpbComplaints.toLocaleString()}</div>
-                <button className="font-semibold text-sm" style={{ color: colors.primary, background: 'none', border: 'none', cursor: 'pointer' }}>View Data →</button>
+                <button onClick={() => handleServiceClick('CFPB')} className="font-semibold text-sm" style={{ color: colors.primary, background: 'none', border: 'none', cursor: 'pointer' }}>View Data →</button>
               </div>
             </div>
 
@@ -484,7 +499,7 @@ const EnshitificationPortal = () => {
                 <h3 className="text-xl font-bold mb-2" style={{ color: colors.gray900 }}>Safety Recalls</h3>
                 <p className="mb-4" style={{ color: colors.gray700, fontSize: '0.95rem' }}>Monitor vehicle and product safety recalls from NHTSA</p>
                 <div className="text-3xl font-bold mb-4" style={{ color: colors.danger }}>{liveStats.nhtsaRecalls.toLocaleString()}</div>
-                <button className="font-semibold text-sm" style={{ color: colors.danger, background: 'none', border: 'none', cursor: 'pointer' }}>View Recalls →</button>
+                <button onClick={() => handleServiceClick('NHTSA')} className="font-semibold text-sm" style={{ color: colors.danger, background: 'none', border: 'none', cursor: 'pointer' }}>View Recalls →</button>
               </div>
             </div>
 
@@ -496,7 +511,7 @@ const EnshitificationPortal = () => {
                 <h3 className="text-xl font-bold mb-2" style={{ color: colors.gray900 }}>CPSC Violations</h3>
                 <p className="mb-4" style={{ color: colors.gray700, fontSize: '0.95rem' }}>Track consumer product safety violations and penalties</p>
                 <div className="text-3xl font-bold mb-4" style={{ color: colors.info }}>{liveStats.cpscViolations.toLocaleString()}</div>
-                <button className="font-semibold text-sm" style={{ color: colors.info, background: 'none', border: 'none', cursor: 'pointer' }}>View Violations →</button>
+                <button onClick={() => handleServiceClick('CPSC')} className="font-semibold text-sm" style={{ color: colors.info, background: 'none', border: 'none', cursor: 'pointer' }}>View Violations →</button>
               </div>
             </div>
 
@@ -508,7 +523,7 @@ const EnshitificationPortal = () => {
                 <h3 className="text-xl font-bold mb-2" style={{ color: colors.gray900 }}>FTC Fraud Reports</h3>
                 <p className="mb-4" style={{ color: colors.gray700, fontSize: '0.95rem' }}>Monitor fraud, scams, and identity theft complaints</p>
                 <div className="text-3xl font-bold mb-4" style={{ color: colors.warning }}>{liveStats.ftcComplaints.toLocaleString()}</div>
-                <button className="font-semibold text-sm" style={{ color: colors.warning, background: 'none', border: 'none', cursor: 'pointer' }}>View Reports →</button>
+                <button onClick={() => handleServiceClick('FTC')} className="font-semibold text-sm" style={{ color: colors.warning, background: 'none', border: 'none', cursor: 'pointer' }}>View Reports →</button>
               </div>
             </div>
           </div>
