@@ -10,7 +10,7 @@ let model: any = null;
 if (API_KEY && API_KEY !== 'your_gemini_api_key_here') {
   try {
     genAI = new GoogleGenerativeAI(API_KEY);
-    model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   } catch (error) {
     console.warn('Gemini AI not initialized:', error);
   }
