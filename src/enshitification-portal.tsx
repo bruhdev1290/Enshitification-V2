@@ -4,6 +4,7 @@ import { AlertTriangle, TrendingDown, Shield, DollarSign, Search, X, AlertCircle
 import { geminiService } from './services/geminiAI';
 import { cfpbAPI } from './services/cfpbAPI';
 import { nhtsaAPI } from './services/nhtsaAPI';
+import { ftcAPI } from './services/ftcAPI';
 
 const EnshitificationPortal = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -231,9 +232,42 @@ const EnshitificationPortal = () => {
     setIsSearching(true);
     
     try {
-      // Try to fetch live data from CFPB
-      const cfpbData = await cfpbAPI.searchComplaints(searchQuery, 10);
-      setLiveApiData(cfpbData);
+      // Fetch data from multiple sources in parallel
+      const [cfpbData, ftcData] = await Promise.all([
+        cfpbAPI.searchComplaints(searchQuery, 10).catch(err => {
+          console.error('CFPB API error:', err);
+          return null;
+        }),
+        ftcAPI.searchFraudReports(searchQuery, 10).catch(err => {
+          console.error('FTC API error:', err);
+          return null;
+        })
+      ]);
+      
+      // Combine the data
+      const combinedData = {
+        cfpb: cfpbData,
+        ftc: ftcData,
+        timestamp: new Date().toISOString()
+      };
+      
+      setLiveApiData(combinedData);
+      
+      // If both APIs fail and Gemini is available, use AI to provide insights
+      if (!cfpbData && !ftcData && geminiService.isAvailable()) {
+        try {
+          const aiInsight = await geminiService.consumerAdviceBot(
+            `I'm searching for information about ${searchQuery}. Can you provide general consumer protection guidance?`,
+            { searchQuery }
+          );
+          setAISearchResult({
+            intent: 'fallback',
+            answer: aiInsight
+          });
+        } catch (aiError) {
+          console.error('Gemini fallback error:', aiError);
+        }
+      }
     } catch (error) {
       console.error('Live data fetch error:', error);
     } finally {
@@ -269,7 +303,7 @@ const EnshitificationPortal = () => {
               Beta
             </span>
             <span className="text-sm" style={{ color: colors.white }}>
-              This is a new service – your <a href="#" style={{ color: colors.white, textDecoration: 'underline', fontWeight: 'bold' }}>feedback</a> will help us to improve it.
+              This is a new service – your <a href="https://devpost.com/bruhdev1290?ref_content=user-portfolio&ref_feature=portfolio&ref_medium=global-nav" target="_blank" rel="noopener noreferrer" style={{ color: colors.white, textDecoration: 'underline', fontWeight: 'bold' }}>feedback</a> will help us to improve it.
             </span>
           </div>
         </div>
