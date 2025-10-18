@@ -7,7 +7,7 @@ import { nhtsaAPI } from './services/nhtsaAPI';
 import { ftcAPI } from './services/ftcAPI';
 import { ChatBox } from './components/ChatBox';
 
-const EnshitificationPortal = () => {
+const QualityControlPortal = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState('');
   const [isAISearch, setIsAISearch] = useState(false);
@@ -596,10 +596,10 @@ const EnshitificationPortal = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-3xl font-bold mb-6" style={{ color: colors.gray900 }}>About The Enshitification Portal</h2>
+          <h2 className="text-3xl font-bold mb-6" style={{ color: colors.gray900 }}>About The Quality Control Portal</h2>
           <div className="p-8 rounded-lg" style={{ backgroundColor: colors.white, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
             <p className="mb-4" style={{ color: colors.gray700, fontSize: '1.125rem', lineHeight: '1.75' }}>
-              The Enshitification Portal is a comprehensive consumer protection transparency platform that enables citizens to access complaint data, track safety recalls, monitor fraud reports, and analyze quality decline across industries from four major federal agencies.
+              The Quality Control Portal is a comprehensive consumer protection transparency platform that enables citizens to access complaint data, track safety recalls, monitor fraud reports, and analyze quality decline across industries from four major federal agencies.
             </p>
             <p style={{ color: colors.gray700, fontSize: '1.125rem', lineHeight: '1.75' }}>
               Built using government design systems for accessibility, usability, and trust. This platform is designed for citizen use and all data is sourced directly from federal agencies.
@@ -621,4 +621,4 @@ const EnshitificationPortal = () => {
   );
 };
 
-export default EnshitificationPortal;
+export default QualityControlPortal;
