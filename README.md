@@ -8,7 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Open Source](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://opensource.org/)
 
-![Enshitification Portal Screenshot](https://github.com/user-attachments/assets/a662a37d-3620-4e4a-ab77-824be228c162)
+<img width="1869" height="4291" alt="cosmic-faloodeh-5b8113 netlify app-Quality Control Portal - Consumer Protection Data-fpscreenshot" src="https://github.com/user-attachments/assets/4497fd82-acb7-4300-9350-930e5b2f7820" />
+
 
 ## 🎯 Open Source Hackfest 2025
 
