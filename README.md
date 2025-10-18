@@ -67,8 +67,8 @@ This project is built for **Open Source Hackfest**, competing in:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/bruhdev1290/Enshitification-V2.git
-   cd Enshitification-V2
+   git clone https://github.com/bruhdev1290/Quality-control-Portal-
+   cd Quality-control-Portal
    ```
 
 2. **Install dependencies**
