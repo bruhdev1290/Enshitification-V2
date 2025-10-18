@@ -148,10 +148,10 @@ Provide a clear, concise analysis.`;
     }
 
     try {
-      const prompt = `You are the AI assistant for "The Enshitification Portal" - a government transparency platform that tracks quality decline and consumer protection issues across industries using real-time federal data.
+      const prompt = `You are the AI assistant for "The Quality Control Portal" - a government transparency platform that tracks quality decline and consumer protection issues across industries using real-time federal data.
 
 PORTAL MISSION & DATA SOURCES:
-- Track "enshitification" (quality decline) in products and services over time
+- Track quality decline in products and services over time
 - Aggregate data from 4 major U.S. federal agencies:
   * CFPB (Consumer Financial Protection Bureau): 1.8M+ financial complaints
   * NHTSA (National Highway Traffic Safety Administration): 14K+ automotive recalls
