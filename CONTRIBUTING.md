@@ -4,7 +4,7 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 ## 🎯 Welcome Contributors!
 
-We're building a platform to empower consumers through transparency and government data. Whether you're here for Open Source Hackfest or just want to help, we appreciate your contributions!
+We're building a platform to empower consumers through transparency and government data. Whether you're here for Open Source Hackfest or just want to help, I appreciate your contributions!
 
 ## Quick Start for Contributors
 
