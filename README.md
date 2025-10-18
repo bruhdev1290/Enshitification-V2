@@ -1,4 +1,4 @@
-# 🛡️ The Enshitification Portal
+# 🛡️ The quality control Portal
 
 > **"They don't do it like they used to..."**
 >
