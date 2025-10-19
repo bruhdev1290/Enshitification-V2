@@ -282,7 +282,7 @@ This platform aggregates data from four major U.S. federal agencies:
 
 ### 4. FTC - Federal Trade Commission
 - **API**: [FTC Consumer Sentinel API](https://api.ftc.gov/)
-- **Data**: Fraud reports, robocall complaints, identity theft
+- **Data**: HSR Early Termination Notices and robocall complaints
 - **Stats**: 5.8M+ fraud/scam complaints
 - **DEMO_KEY available for testing**
 
@@ -476,7 +476,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📺 Demo Video
 
-Watch our 2-minute demo showcasing the platform's features and AI capabilities: [Coming Soon]
+Watch our 2-minute demo showcasing the platform's features and AI capabilities: https://vimeo.com/1128404863?fl=pl&fe=sh
 
 ## 🎯 Project Goals
 
